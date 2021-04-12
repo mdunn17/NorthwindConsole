@@ -23,7 +23,7 @@ namespace NorthwindConsole
                 {
                     Console.WriteLine("1) Display Categories");
                     Console.WriteLine("2) Add Category");
-                    Console.WriteLine("3) Display Category and related products");
+                    Console.WriteLine("3) Display Category and Related Products");
                     Console.WriteLine("\"q\" to quit");
                     choice = Console.ReadLine();
                     Console.Clear();
@@ -95,6 +95,8 @@ namespace NorthwindConsole
                         int id = int.Parse(Console.ReadLine());
                         Console.Clear();
                         logger.Info($"CategoryId {id} selected");
+                        Categories category = db.Categories.FirstOrDefault(c => c.CategoryId == id);
+                        Console.WriteLine($"{category.CategoryName} - {category.Description}");
                     }
                     Console.WriteLine();
 
