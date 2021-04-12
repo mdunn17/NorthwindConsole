@@ -5,6 +5,7 @@ using System.Linq;
 using NorthwindConsole.Model;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace NorthwindConsole
 {
@@ -23,7 +24,8 @@ namespace NorthwindConsole
                 {
                     Console.WriteLine("1) Display Categories");
                     Console.WriteLine("2) Add Category");
-                    Console.WriteLine("3) Display Category and Related Products");
+                    Console.WriteLine("3) Select Category and display Related Products");
+                    Console.WriteLine("4) Display All Categories and Related Products");
                     Console.WriteLine("\"q\" to quit");
                     choice = Console.ReadLine();
                     Console.Clear();
@@ -95,11 +97,24 @@ namespace NorthwindConsole
                         int id = int.Parse(Console.ReadLine());
                         Console.Clear();
                         logger.Info($"CategoryId {id} selected");
-                        Categories category = db.Categories.FirstOrDefault(c => c.CategoryId == id);
+                        Categories category = db.Categories.Include("Products").FirstOrDefault(c => c.CategoryId == id);
                         Console.WriteLine($"{category.CategoryName} - {category.Description}");
                         foreach (Products p in category.Products)
                         {
                             Console.WriteLine(p.ProductName);
+                        }
+                    }
+                    else if (choice == "4")
+                    {
+                        var db = new NWConsole_96_medContext();
+                        var query = db.Categories.Include("Products").OrderBy(p => p.CategoryId);
+                        foreach (var item in query)
+                        {
+                            Console.WriteLine($"{item.CategoryName}");
+                            foreach (Products p in item.Products)
+                            {
+                                Console.WriteLine($"\t{p.ProductName}");
+                            }
                         }
                     }
                     Console.WriteLine();
