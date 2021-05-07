@@ -1,4 +1,5 @@
 ﻿using System;
+using NLog.Web;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
@@ -305,5 +306,29 @@ namespace NorthwindConsole.Model
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+        public void AddCategory(Categories category)
+        {
+            this.Categories.Add(category);
+            this.SaveChanges();
+        }
+        public void AddProduct(Products product)
+        {
+            this.Products.Add(product);
+            this.SaveChanges();
+        }
+
+        public void DeleteProduct(Products product)
+        {
+            this.Products.Remove(product);
+            this.SaveChanges();
+        }
+
+        public void EditProduct(Products UpdatedProduct)
+        {
+            Products product = this.Products.Find(UpdatedProduct.ProductId);
+            product.ProductName = UpdatedProduct.ProductName;
+            this.SaveChanges();
+        }
     }
 }
