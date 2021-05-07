@@ -90,8 +90,22 @@ namespace NorthwindConsole
                         }
                     }
                     // -----------------------------------------------------------------------------------------------------------------------------------------------------------------
-                    //else if (choice == "3")
-                                  
+                    else if (choice == "3")
+                    {
+                        var db = new NWConsole_96_medContext();
+                        Console.WriteLine("Choose the category to edit:");
+                        var category = GetCategory(db);
+                        if (category != null)
+                        {
+                            Categories UpdatedCategory = InputCategory(db);
+                            if (UpdatedCategory != null)
+                            {
+                                UpdatedCategory.CategoryId = category.CategoryId;
+                                db.EditCategory(UpdatedCategory);
+                                logger.Info($"Category (id: {category.CategoryId}) updated");
+                            }
+                        }
+                    }               
                     // -----------------------------------------------------------------------------------------------------------------------------------------------------------------
                     else if (choice == "4")
                     {
@@ -390,6 +404,64 @@ namespace NorthwindConsole
             }
 
             return product;
+        }
+
+        public static Categories GetCategory(NWConsole_96_medContext db)
+        {
+            // display all categories
+            var categories = db.Categories.OrderBy(b => b.CategoryId);
+            foreach (Categories c in categories)
+            {
+                Console.WriteLine($"{c.CategoryId}: {c.CategoryName}");
+            }
+            if (Int32.TryParse(Console.ReadLine(), out int CategoryId))
+            {
+                Categories category = db.Categories.FirstOrDefault(c => c.CategoryId == CategoryId);
+                if (category != null)
+                {
+                    return category;
+                }
+            }
+            logger.Error("Invalid Category Id");
+            return null;
+        }
+
+        public static Categories InputCategory(NWConsole_96_medContext db)
+        {
+            Categories category = new Categories();
+            Console.WriteLine("Enter the Category name");
+            category.CategoryName = Console.ReadLine();
+            Console.WriteLine("Enter the Category Description:");
+            category.Description = Console.ReadLine();
+
+            ValidationContext context = new ValidationContext(category, null, null);
+            List<ValidationResult> results = new List<ValidationResult>();
+
+            var isValid = Validator.TryValidateObject(category, context, results, true);
+            if (isValid)
+            {
+                // check for unique name
+                if (db.Categories.Any(b => b.CategoryName == category.CategoryName))
+                {
+                    // generate validation error
+                    isValid = false;
+                    results.Add(new ValidationResult("Category name exists", new string[] { "Name" }));
+                }
+                else
+                {
+                    logger.Info("Validation passed");
+                }
+            }
+            if (!isValid)
+            {
+                foreach (var result in results)
+                {
+                    logger.Error($"{result.MemberNames.First()} : {result.ErrorMessage}");
+                }
+                return null;
+            }
+
+            return category;
         }
     }
 }
