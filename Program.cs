@@ -34,7 +34,7 @@ namespace NorthwindConsole
                     Console.WriteLine("10) Edit a Product");
                     Console.WriteLine("\"q\" to quit");
                     choice = Console.ReadLine();
-                    //Console.Clear();
+                    Console.Clear();
                     logger.Info($"Option {choice} selected");
                     // -----------------------------------------------------------------------------------------------------------------------------------------------------------------
                     if (choice == "1")
@@ -120,7 +120,6 @@ namespace NorthwindConsole
                         }
                         Console.ForegroundColor = ConsoleColor.White;
                         int id = int.Parse(Console.ReadLine());
-                        //Console.Clear();
                         logger.Info($"CategoryId {id} selected");
                         Categories category = db.Categories.Include("Products").FirstOrDefault(c => c.CategoryId == id);
                         Console.WriteLine($"{category.CategoryName} - {category.Description}");
